@@ -22,14 +22,17 @@ Stepper::Stepper(int _step_pin, int _dir_pin, int enc_pinA, int enc_pinB, bool f
   init(_step_pin, _dir_pin);
 }
 
+// somewhere read encoder and transmit to teensy
+// Disect and run in the step function
 void Stepper::step_w_encoder() {
-  enc_step = int(encoder->read());///1.25); // 1 Step = 1.25 encoder steps
+  enc_step = int(encoder->read()); // Transmit to teensy
   
   if (digitalRead(step_pin) == HIGH && timer > on_time) {
     digitalWrite(step_pin, LOW);
     timer = 0;
   }
   else {
+    // This is what actually moves the motor
     if (timer > off_time) {
       // Tolerance is necessary because encoder steps are smaller so the perfect enc step may never be reached
       if (enc_step < desired_step - TOLERANCE) {
@@ -144,88 +147,47 @@ void Stepper::tune_controller(int _max_steps, float p_set, float p_0, int _min_d
   max_delay = _max_delay;
 }
 
-void Stepper::velPID() {
-  int error = abs(desired_step - enc_step);
-  int init_dist = int(max_steps / abs(enc_step - init_step));
-  int v_out = map(K_Pset*error - K_P0*init_dist, 0, max_steps, 0, 100);
-  
-  set_speed(v_out);
-}
-
-void Stepper::openController() {
-  int error = abs(desired_step - current_step);
-  int init_dist = int(max_steps / abs(current_step -  init_step));
-  //int v_out = int(100 / (1 + pow(EULER, (5 - error/100))));
-  int v_out = map(K_Pset*error - K_P0*init_dist, 0, max_steps, 0, 100);
-  
-  set_speed(v_out);
-  
-}
 
 void Stepper::step() {
-  
-  if (encoder_enabled) {
-    velPID();
-    step_w_encoder();
+  if (digitalRead(step_pin) == HIGH && timer > on_time) {
+    digitalWrite(step_pin, LOW);
+    timer = 0;
   }
   else {
-    openController();
-    if (digitalRead(step_pin) == HIGH && timer > on_time) {
-      digitalWrite(step_pin, LOW);
+    if (timer > off_time) {
+      // Currently, this decides which direction to go
+      // Change to decide input velocity
+      if (current_step > desired_step - TOLERANCE && current_step < desired_step + TOLERANCE) {}
+      else {
+        
+        if (current_dir) {
+          // Go forwards
+          current_step += 1;
+          enc_step += 1;
+        }
+        else {
+          current_step -= 1;
+          enc_step -= 1;
+        }
+        digitalWrite(step_pin, HIGH);
+      }
       timer = 0;
     }
     else {
-      if (timer > off_time) {
-        
-        if (current_step > desired_step - TOLERANCE && current_step < desired_step + TOLERANCE) {}
-        else {
-         
-          if (current_dir) {
-            // Go forwards
-            current_step += 1;
-            enc_step += 1;
-          }
-          else {
-            current_step -= 1;
-            enc_step -= 1;
-          }
-          digitalWrite(step_pin, HIGH);
-        }
-        timer = 0;
-      }
-      else {
-        timer++;
-      }
+      timer++;
     }
   }
+
 }
 
 
-void Stepper::set_point(int step_position) {
-  init_step = step_position;
-  desired_step = step_position;
-  if (current_step < desired_step) {
-    digitalWrite(dir_pin, pos_dir);
-    current_dir = true;
-  }
-  else {
-    digitalWrite(dir_pin, !pos_dir);
-    current_dir = false;
-  }
-  
-}
-
-int Stepper::get_enc_step() {
-  return enc_step;
-}
-int Stepper::get_desired_step() {
-  return desired_step;
-}
 void Stepper::timerCallBack() {
   for(int i=0; i < num_steppers; i++) {
     steppers[i].step();
   }
 }
+
+// Call to initialize
 void Stepper::setSteppers(Stepper* _steppers, int _num_steppers) {
   steppers = _steppers;
   num_steppers = _num_steppers;
@@ -235,7 +197,3 @@ void Stepper::setSteppers(Stepper* _steppers, int _num_steppers) {
   
 }
 
-// To be called when stepper power activates
-void Stepper::update_step_cnt() {
-  current_step = enc_step;
-}

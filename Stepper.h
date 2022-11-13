@@ -92,7 +92,6 @@ class Stepper {
     // void tune_controller(float p, float i, int _min_delay, int _max_delay); // This could be part of the constructor
     void tune_controller(int _max_steps, float p_set, float p_0, int _min_delay, int _max_delay);
     
-    void watch_bounds();
     void step();
     void step_w_encoder();
 

@@ -15,17 +15,9 @@
 
 
 // Note: It should attempt to stay at zero when turned on, if it continuously spins in one direction, flip the direction
-// Bread Board
-//Stepper steppers[] = {Stepper(33, 34, 6, 7), Stepper(2, 3, 37, 38), Stepper(32, 31, 11, 12), Stepper(35, 36, 39, 40), Stepper(28, 27, 41, 14), Stepper(26, 25, 15, 16)};
 
-// PCB
-//Stepper steppers[] = {Stepper(25, 24, 23, 22), Stepper(29, 28, 21, 20), Stepper(33, 32, 18, 17), Stepper(35, 34, 5, 6), Stepper(37, 36, 16, 15), Stepper(31, 30, 41, 40)};
 Stepper steppers[] = {Stepper(25, 24, 22, 23, true), Stepper(29, 28, 21, 20), Stepper(33, 32, 18, 17), Stepper(35, 34, 5, 6), Stepper(37, 36, 15, 16), Stepper(31, 30, 41, 40)};
-//Stepper steppers[] = {Stepper(25, 24, 22, 23, true), Stepper(29, 28, 21, 20), Stepper(31, 30, 40, 41), Stepper(37, 36, 15, 16), Stepper(35, 34, 6, 5), Stepper(33, 32, 18, 17)};
 
-
-// J6 tests
-//Stepper steppers[] = {Stepper(25, 24, 23, 22), Stepper(29, 28, 21, 20), Stepper(33, 32, 18, 17), Stepper(37, 36, 6, 5, true), Stepper(35, 34, 16, 15, true), Stepper(31, 30, 41, 40)};
 
 int led = 13;
 int spinCounter = 0;
