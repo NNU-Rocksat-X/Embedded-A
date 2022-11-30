@@ -1,4 +1,4 @@
-# Embedded-MCU-SW
+# Embedded Robot Control
 
 ## Installing
 The embedded software is designed to run on a Teensy 4.1. The software can be loaded onto the teensy with two methods:
