@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 set(ARDUINOPATH "/home/jet/pkgs/arduino-1.8.19")
-#set(LIBRARYPATH "${ARDUINOPATH}/libraries")
+set(LIBRARYPATH "${ARDUINOPATH}/libraries")
 set(COMPILERPATH "${ARDUINOPATH}/hardware/tools/arm/bin")
 
 set(TEENSYLOADERPATH "/home/jet/pkgs/teensy_loader_cli-2.2")
