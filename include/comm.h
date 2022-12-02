@@ -2,49 +2,40 @@
 #define COMM_H_
 
 #include "Arduino.h"
+#include <apogee_robot_core/CommonComms.h>
+#include <assert.h>
 
 #define BAUD_RATE (9600)
-#define hw_serial Serial
 
-void memcopy(void* dest, const void* src, int n)
-{
-    char *cdest = (char*)dest;
-    char *csrc = (char*)src;
+// hw_serial == Serial: Communicate over micro-usb
+// hw_serial == Serial1: Communicate over tx and rx pins
+#define hw_serial (Serial)
+#define BUFFER_SIZE (50)
 
-    for (int i = 0; i < n; i++)
-    {
-        cdest[i] = csrc[i];
-    }
-}
+/* @Brief - Performs required steps to setup the communication. Call during main setup
+*/
+void setup_comm(void);
 
-typedef struct packet
-{
-    uint8_t led;
-    uint8_t reserved[3];
-    float cmd;
-} Packet;
+/* @Brief - Get_data checks for a command from the jetson and places the command for each
+*           joint into the cmd parameter
+*
+* @param[out] cmd - An array of size NUM_JOINTS (from CommonComms.h)
+*                   get_data will place the cmd from the jetson for each joint in the array
+*
+* Returns 0 - if no data available
+* Returns 1 - if there was a transmission error
+* Returns 2 - if transmission was successful
+*/
+uint8_t get_cmd(float* cmd);
 
-void setup_comm()
-{
-    hw_serial.begin(BAUD_RATE);
-}
-
-
-void get_data(Packet* rx)
-{
-    char buffer[10];
-    if(hw_serial.available())
-    {
-        hw_serial.readBytes(buffer, sizeof(Packet));
-        memcopy(rx, &buffer[0], sizeof(Packet));
-    }
-}
-
-void write_data(Packet* tx)
-{
-    hw_serial.write((char*)tx, sizeof(Packet));
-}
-
-
+/* @Brief - Sends encoder data to the jetson
+*
+* @param[in] enc_steps - An array of size NUM_JOINTS (from CommonComms.h)
+*                        containing the encoder step for each joint.
+*                        The jetson calculates the degree of the joint
+*
+* Return N/A
+*/
+void send_feedback(uint32_t* enc_steps);
 
 #endif /* COMM_H_ */
