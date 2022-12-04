@@ -44,6 +44,7 @@ Install Teensyduino
 ## Building
 Edit `teensy_toolchain.cmake`
 Replace `/home/jet` with your username
+Move `Teensy4_CmakeLists.txt` to `arduino-1.8.19/hardware/teensy/avr/cores/teensy4/
 First create the build directory
 `cmake -D CMAKE_TOOLCHAIN_FILE=./teensy_toolchain.cmake -B./build -H./`
 
