@@ -42,6 +42,8 @@ Install Teensyduino
   - Edit `Makefile` and comment the lines under "Use these lines for Teensy 4.0" and uncomment under "User these lines for Teensy 4.1"
   
 ## Building
+Edit `teensy_toolchain.cmake`
+Replace `/home/jet` with your username
 First create the build directory
 `cmake -D CMAKE_TOOLCHAIN_FILE=./teensy_toolchain.cmake -B./build -H./`
 
