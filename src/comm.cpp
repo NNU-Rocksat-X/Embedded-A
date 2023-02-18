@@ -27,7 +27,7 @@ void setup_comm(void)
     hw_serial.begin(BAUD_RATE);
 }
 
-uint8_t get_cmd(float* cmd)
+uint8_t get_cmd(float* cmd, bool* led_value)
 {
     if(hw_serial.available())
     {
@@ -39,13 +39,15 @@ uint8_t get_cmd(float* cmd)
         // check crc
         memcopy(&rx, &buffer[0], sizeof(CMDPacket));
         uint16_t crc = crc16((unsigned char*)&rx, sizeof(CMDPacket) - 2); // // Subtract 2 so the crc is not calculated over the crc
+	*led_value = (bool)rx.led;
 
-        if (crc != rx.crc || rx.seq < sequence)
+        if (crc != rx.crc)
         {
             return 1;
         } else {
             sequence = rx.seq;
             memcopy(cmd, &rx.joint_velocity_cmd[0], sizeof(float) * NUM_JOINTS);
+	    
             return 2;
         }
     } else {

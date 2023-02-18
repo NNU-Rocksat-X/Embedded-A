@@ -11,10 +11,15 @@ void setup(void)
 
 void loop(void)
 {
+	bool led_power;
 	
-	get_cmd(&velocity_cmds[0]);
+	get_cmd(&velocity_cmds[0], &led_power);
 
 
+        //digitalWrite(13, HIGH);
+	delay(100);
+	digitalWrite(13, led_power);
+	
 
 	send_feedback(&encoder_positions[0]);
 	delay(100);

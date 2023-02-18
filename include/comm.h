@@ -26,7 +26,7 @@ void setup_comm(void);
 * Returns 1 - if there was a transmission error
 * Returns 2 - if transmission was successful
 */
-uint8_t get_cmd(float* cmd);
+uint8_t get_cmd(float* cmd, bool* led_value);
 
 /* @Brief - Sends encoder data to the jetson
 *
