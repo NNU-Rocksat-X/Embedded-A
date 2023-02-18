@@ -29,9 +29,9 @@ Install Arduino
     - `sudo tar -xf arduino-1.8.19-linux64.tar.xz`
   - For aarch64 architecture (Jetson Nano): `wget https://downloads.arduino.cc/arduino-1.8.19-linuxaarch64.tar.xz`
     - `sudo tar -xf arduino-1.8.19-linuxaarch64.tar.xz`
-  - `cd arduino-1.8.19
+  - `cd arduino-1.8.19`
   - `sudo ./install.sh`
-  - `./arduino-linux-setup.sh $USER
+  - `./arduino-linux-setup.sh $USER`
   
 ### Teensyduino
 Install Teensyduino
