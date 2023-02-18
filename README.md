@@ -36,8 +36,8 @@ Install Arduino
 ### Teensyduino
 Install Teensyduino
   - For aarch64 (Jetson): `wget https://www.pjrc.com/teensy/td_157/TeensyduinoInstall.linuxaarch64`
-  - `chmod 755 TeensyduinoInstall.linux64`
-  - `./TeensyduinoInstall.linux64 --dir=arduino-1.8.19`
+  - `chmod 755 TeensyduinoInstall.linuxaarch64`
+  - `./TeensyduinoInstall.linuxaarch64 --dir=arduino-1.8.19`
   - `cd arduino-1.8.15/hardware/teensy/avr/cores/teensy4`
   - Edit `Makefile` and comment the lines under "Use these lines for Teensy 4.0" and uncomment under "User these lines for Teensy 4.1"
   
