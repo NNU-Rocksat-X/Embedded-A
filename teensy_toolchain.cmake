@@ -1,6 +1,6 @@
 set(CMAKE_SYSTEM_PROCESSOR arm)
 
-set(ARDUINOPATH "/home/jet/pkgs/arduino-1.8.19")
+set(ARDUINOPATH "/home/norman/pkgs/arduino-1.8.19")
 set(COMPILERPATH "${ARDUINOPATH}/hardware/tools/arm/bin")
 set(TEENSYLIBPATH "${ARDUINOPATH}/hardware/teensy/avr/cores/teensy4")
 
@@ -10,7 +10,7 @@ set(CMAKE_CXX_COMPILER_WORKS 1)
 set(CMAKE_CXX_COMPILER "${COMPILERPATH}/arm-none-eabi-g++")
 set(CMAKE_LINKER "${COMPILERPATH}/arm-none-eabi-ld")
 
-
+set(CMAKE_CXX_STANDARD 11)
 set(MCU "IMXRT1062")
 set(MCU_LD "${TEENSYLIBPATH}/imxrt1062_t41.ld")
 set(MCU_DEF "ARDUINO_TEENSY41")
