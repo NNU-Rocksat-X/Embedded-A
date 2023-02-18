@@ -29,22 +29,20 @@ Install Arduino
     - `sudo tar -xf arduino-1.8.19-linux64.tar.xz`
   - For aarch64 architecture (Jetson Nano): `wget https://downloads.arduino.cc/arduino-1.8.19-linuxaarch64.tar.xz`
     - `sudo tar -xf arduino-1.8.19-linuxaarch64.tar.xz`
-  - `cd arduino-1.8.19
+  - `cd arduino-1.8.19`
   - `sudo ./install.sh`
-  - `./arduino-linux-setup.sh $USER
+  - `./arduino-linux-setup.sh $USER`
   
 ### Teensyduino
 Install Teensyduino
   - For aarch64 (Jetson): `wget https://www.pjrc.com/teensy/td_157/TeensyduinoInstall.linuxaarch64`
-  - `chmod 755 TeensyduinoInstall.linux64`
-  - `./TeensyduinoInstall.linux64 --dir=arduino-1.8.19`
+  - `chmod 755 TeensyduinoInstall.linuxaarch64`
+  - `./TeensyduinoInstall.linuxaarch64 --dir=arduino-1.8.19`
   - `cd arduino-1.8.15/hardware/teensy/avr/cores/teensy4`
   - Edit `Makefile` and comment the lines under "Use these lines for Teensy 4.0" and uncomment under "User these lines for Teensy 4.1"
   
 ## Building
-Edit `teensy_toolchain.cmake`
-Replace `/home/jet` with your username
-Move `Teensy4_CmakeLists.txt` to `arduino-1.8.19/hardware/teensy/avr/cores/teensy4/
+Move `Teensy4_CmakeLists.txt` in this repository to `arduino-1.8.19/hardware/teensy/avr/cores/teensy4/`
 Rename the Teensy4_CMakeLists.txt you move to CMakeLists.txt
 
 Then Create the build directory
