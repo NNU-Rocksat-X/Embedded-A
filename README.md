@@ -42,9 +42,7 @@ Install Teensyduino
   - Edit `Makefile` and comment the lines under "Use these lines for Teensy 4.0" and uncomment under "User these lines for Teensy 4.1"
   
 ## Building
-Edit `teensy_toolchain.cmake`
-Replace `/home/jet` with your username
-Move `Teensy4_CmakeLists.txt` to `arduino-1.8.19/hardware/teensy/avr/cores/teensy4/
+Move `Teensy4_CmakeLists.txt` in this repository to `arduino-1.8.19/hardware/teensy/avr/cores/teensy4/`
 Rename the Teensy4_CMakeLists.txt you move to CMakeLists.txt
 
 Then Create the build directory
