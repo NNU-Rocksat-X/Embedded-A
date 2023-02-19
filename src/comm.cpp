@@ -39,7 +39,7 @@ uint8_t get_cmd(float* cmd, bool* led_value)
         // check crc
         memcopy(&rx, &buffer[0], sizeof(CMDPacket));
         uint16_t crc = crc16((unsigned char*)&rx, sizeof(CMDPacket) - 2); // // Subtract 2 so the crc is not calculated over the crc
-	*led_value = (bool)rx.led;
+	    *led_value = (bool)rx.led;
 
         if (crc != rx.crc)
         {

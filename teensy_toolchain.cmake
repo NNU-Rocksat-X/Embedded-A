@@ -1,10 +1,6 @@
 set(CMAKE_SYSTEM_PROCESSOR arm)
 
-<<<<<<< HEAD
-set(ARDUINOPATH "/home/nvidia/pkgs/arduino-1.8.19")
-=======
 set(ARDUINOPATH "/home/norman/pkgs/arduino-1.8.19")
->>>>>>> 1305bec37fcc3cfcdcc34b883ab742303cb6a90d
 set(COMPILERPATH "${ARDUINOPATH}/hardware/tools/arm/bin")
 set(TEENSYLIBPATH "${ARDUINOPATH}/hardware/teensy/avr/cores/teensy4")
 
