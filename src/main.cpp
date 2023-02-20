@@ -17,12 +17,11 @@ void loop(void)
 
 
         //digitalWrite(13, HIGH);
-	delay(100);
+	delay(10);
 	digitalWrite(13, led_power);
 	
 
 	send_feedback(&encoder_positions[0]);
-	delay(100);
 }
 
 int main(void)
