@@ -29,7 +29,7 @@ void setup_comm(void)
     hw_serial.begin(BAUD_RATE);
 }
 
-uint8_t get_cmd(float* cmd, bool* led_value)
+uint8_t get_cmd(int32_t* cmd, bool* led_value)
 {
     char buffer[BUFFER_SIZE];
     int bytes_recieved = 0;
@@ -82,7 +82,7 @@ uint8_t get_cmd(float* cmd, bool* led_value)
     }
 }
 
-void send_feedback(uint32_t* enc_steps)
+void send_feedback(int32_t* enc_steps)
 {
     RESPacket tx;
     tx.seq = sequence;
