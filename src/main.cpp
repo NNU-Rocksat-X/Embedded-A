@@ -118,7 +118,7 @@ void setup(void)
   pinMode(13, OUTPUT);
   //setup_comm();
 
-  //initEncoders();
+  initEncoders();
   
   int ii = 0;
   
@@ -193,7 +193,7 @@ void setup(void)
 
   setup_comm();
 
-  //initEncoders();
+  initEncoders();
 
 	pinMode(13, OUTPUT);
 } 
@@ -204,15 +204,15 @@ void loop(void)
 	
 	get_cmd(&position_cmds[0], &led_power);
 
-  tasks[0].period = myStepper[0].newFrequency(position_cmds[0], encoder_positions[0]);   // set the period of each motor based on the velocities recived from the jetson
-  tasks[1].period = myStepper[1].newFrequency(position_cmds[1], encoder_positions[1]);
-  tasks[2].period = myStepper[2].newFrequency(position_cmds[2], encoder_positions[2]);
-  tasks[3].period = myStepper[3].newFrequency(position_cmds[3], encoder_positions[3]);
-  tasks[4].period = myStepper[4].newFrequency(position_cmds[4], encoder_positions[4]);
-  tasks[5].period = myStepper[5].newFrequency(position_cmds[5], encoder_positions[5]);
-  tasks[6].period = myStepper[6].newFrequency(position_cmds[6], encoder_positions[6]);
+  tasks[0].period = myStepper[0].newFrequency(myEncoder[0].read(), position_cmds[0]);   // set the period of each motor based on the velocities recived from the jetson
+  tasks[1].period = myStepper[1].newFrequency(myEncoder[1].read(), position_cmds[1]);
+  tasks[2].period = myStepper[2].newFrequency(myEncoder[2].read(), position_cmds[2]);
+  tasks[3].period = myStepper[3].newFrequency(myEncoder[3].read(), position_cmds[3]);
+  tasks[4].period = myStepper[4].newFrequency(myEncoder[4].read(), position_cmds[4]);
+  tasks[5].period = myStepper[5].newFrequency(myEncoder[5].read(), position_cmds[5]);
+  tasks[6].period = myStepper[6].newFrequency(myEncoder[6].read(), position_cmds[4]);
 
-	delay(10);
+	delay(5);
 	
   sendEncoderValues();
 	send_feedback(&encoder_positions[0]);

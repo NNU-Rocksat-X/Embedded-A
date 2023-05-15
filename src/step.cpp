@@ -75,8 +75,8 @@ double Stepper::pidController(double goal_position) {
 double Stepper::pid_controller(double desired_angle, double current_angle) {
   double proportional_gain = 0.1;
   double integral_gain = 0.001;
-  double derivative_gain = 0.01;
-  double i_clamp = 0.001;
+  double derivative_gain = 0.1;
+  double max_integral = 0.1;
 
   double now_time = millis();
   double delta_time = now_time - previous_time;
@@ -86,21 +86,33 @@ double Stepper::pid_controller(double desired_angle, double current_angle) {
   integral += error;
   derivative = (error - previous_error) / delta_time;
 
-  if (integral > i_clamp) {         // stop the integral from getting out of control
-    integral = i_clamp;
+  if (integral > max_integral) {         // stop the integral from getting out of control
+    integral = max_integral;
+  }
+  else if (integral < -max_integral) {
+    integral = -max_integral;
   }
 
-  if (error < 0.001) {              // reset integral if the error is enough
+  if (fabs(error) < 5) {              // reset integral if the error is enough
     integral = 0;
   }
 
-  return velocity = error * proportional_gain + integral * integral_gain + derivative * derivative_gain;
+  if (error > -10 && error < 10) {
+    digitalWrite(13, HIGH);
+  }
+  else {
+    digitalWrite(13, LOW);
+  }
+  
+
+  previous_error = error;
+
+  return velocity = error * proportional_gain;// + integral * integral_gain + derivative * derivative_gain;
 }
 
 int Stepper::newFrequency(double position, double desired_position) {
   int velocity; 
 
-// pidController(velocity);
   velocity = pid_controller(desired_position, position);
 
   if(velocity > 0) {
@@ -110,13 +122,13 @@ int Stepper::newFrequency(double position, double desired_position) {
     direction = LOW;
   }
 
-  if (abs(velocity) < 0.001) {
+  if (fabs(velocity) < 0.001) {
     motorFrequency = 1000000;
-    digitalWrite(13, LOW);
+    //digitalWrite(13, LOW);
   }
   else {
     motorFrequency = (1000 / abs(velocity)); // this just needs to invert the velocity values
-    digitalWrite(13, HIGH);
+    //digitalWrite(13, HIGH);
   }
 
   if(motorFrequency <= 15){
