@@ -7,7 +7,7 @@ class Stepper{
   public:
     Stepper(int _step_pin, int _dir_pin, int _enc_pin_A, int enc_pin_B, int encoderResolution);
     void step();
-    int newFrequency(double velocity);
+    int newFrequency(double position, double desired_position);
     int readEncoders();
     void currentVelocity(int currentPosition);  // populates the current velocity values on all the instances of this class
     double current_velocity;
@@ -20,21 +20,21 @@ class Stepper{
     bool direction;
     int motorFrequency;
     bool highLow;
-    
+    int encoder_resolution;
 
-    double pidController(double des_velocity);
-    int elapsed_time;
-    int previous_time;
-    int previous_error;
+    double pid_controller(double desired_angle, double current_angle);
 
-    int encoder_resolution; // 300 CPR for NEMA 11 and 14, 1000 PPR & 4000 CPR for NEMA 17 and flat 14
-    int current_vel_time;
-    int current_vel_position;
-    int previous_vel_time;
-    int previous_vel_position;
-    int delta_time;
-
+    double zero_position;
+    double current_angle;
+    double derivative;
     double integral;
+    double error;
+    double proportional_gain;
+    double integral_gain;
+    double derivative_gain;
+    double previous_error;
+    int previous_time;
+    double velocity;
     
 };
 

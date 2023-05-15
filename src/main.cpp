@@ -36,7 +36,7 @@
 #define dir_pin_6     31
 #define dir_pin_7     27
 
-int32_t velocity_cmds[NUM_JOINTS];
+int32_t position_cmds[NUM_JOINTS];
 int32_t encoder_positions[NUM_JOINTS];
 int prevEncoderPos = 0;
 
@@ -104,6 +104,11 @@ void sendEncoderValues() {
  
 }
 
+void initEncoders() {
+  for (int kk = 0; kk < NUM_JOINTS; ++kk) {
+    myEncoder[kk].write(0);
+  }
+}
 
 
 void setup(void)
@@ -112,6 +117,8 @@ void setup(void)
   noInterrupts();
   pinMode(13, OUTPUT);
   //setup_comm();
+
+  //initEncoders();
   
   int ii = 0;
   
@@ -186,6 +193,8 @@ void setup(void)
 
   setup_comm();
 
+  //initEncoders();
+
 	pinMode(13, OUTPUT);
 } 
 
@@ -193,44 +202,27 @@ void loop(void)
 {
 	bool led_power;
 	
-	get_cmd(&velocity_cmds[0], &led_power);
-/*
-  for(int ii = 0; ii < NUM_JOINTS; ++ii) {                        // set the period of each motor
-    tasks[ii].period = myStepper[ii].NewFrequency(velocity_cmds[ii]);
-  }*/
+	get_cmd(&position_cmds[0], &led_power);
 
-  //digitalWrite(13, led_power);
-
-  tasks[0].period = myStepper[0].newFrequency(velocity_cmds[0]);   // set the period of each motor based on the velocities recived from the jetson
-  tasks[1].period = myStepper[1].newFrequency(velocity_cmds[1]);
-  tasks[2].period = myStepper[2].newFrequency(velocity_cmds[2]);
-  tasks[3].period = myStepper[3].newFrequency(velocity_cmds[3]);
-  tasks[4].period = myStepper[4].newFrequency(velocity_cmds[4]);
-  tasks[5].period = myStepper[5].newFrequency(velocity_cmds[5]);
-  tasks[6].period = myStepper[6].newFrequency(velocity_cmds[6]);
-
-
+  tasks[0].period = myStepper[0].newFrequency(position_cmds[0], encoder_positions[0]);   // set the period of each motor based on the velocities recived from the jetson
+  tasks[1].period = myStepper[1].newFrequency(position_cmds[1], encoder_positions[1]);
+  tasks[2].period = myStepper[2].newFrequency(position_cmds[2], encoder_positions[2]);
+  tasks[3].period = myStepper[3].newFrequency(position_cmds[3], encoder_positions[3]);
+  tasks[4].period = myStepper[4].newFrequency(position_cmds[4], encoder_positions[4]);
+  tasks[5].period = myStepper[5].newFrequency(position_cmds[5], encoder_positions[5]);
+  tasks[6].period = myStepper[6].newFrequency(position_cmds[6], encoder_positions[6]);
 
 	delay(10);
-	//digitalWrite(13, led_power);
 	
   sendEncoderValues();
-  encoder_positions[0] = myStepper->current_velocity;
 	send_feedback(&encoder_positions[0]);
 
-  if ( myStepper->current_velocity == 0) {
-    digitalWrite(13, HIGH);
-  }
-  else {
-    digitalWrite(13, LOW);
-  }
-
   //prevEncoderPos = encoder_positions[5];
-
+/*
   for (int jj = 0; jj < 7; ++jj) {
     myStepper[jj].currentVelocity(encoder_positions[jj]);
   }
-
+*/
 }
 
 void motorISR(void){

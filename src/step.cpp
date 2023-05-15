@@ -36,29 +36,31 @@ void Stepper::step(){
     
   }
 }
-
-double Stepper::pidController(double des_velocity) {
+/*
+double Stepper::pidController(double goal_position) {
 
   double proportional_gain = 1;
   double integral_gain = 0.001;
-  double derivative_gain = 20;
-
+  double derivative_gain = 0.05;
   double i_clamp = 0.01;
-  double i_min = 0.0001;
 
   double pid_velocity;
 
   int now_time = millis();
 
-  double error = des_velocity - current_velocity;                  // error is the desired velocity minus the current velocity
+  double error = goal_position - current_position;                  // error is the desired velocity minus the current velocity
   elapsed_time = now_time - previous_time;
 
   double derivative = (error - previous_error) / (elapsed_time);   // acceleration in velocity per milisecond
 
-  integral += error;                         // 
+  integral += error;
 
   if (integral > i_clamp) {
     integral = i_clamp;
+  }
+
+  if (error < 1 && error > -1) {
+    integral = 0;
   }
 
   pid_velocity = proportional_gain * error; //+ integral_gain * integral + derivative_gain * derivative; // basic PID math
@@ -67,9 +69,39 @@ double Stepper::pidController(double des_velocity) {
   previous_time = now_time;                                       // set prev time to caclculate elapsedTime
 
   return pid_velocity;
+}*/
+
+
+double Stepper::pid_controller(double desired_angle, double current_angle) {
+  double proportional_gain = 0.1;
+  double integral_gain = 0.001;
+  double derivative_gain = 0.01;
+  double i_clamp = 0.001;
+
+  double now_time = millis();
+  double delta_time = now_time - previous_time;
+  previous_time = now_time;
+
+  error = desired_angle - current_angle;
+  integral += error;
+  derivative = (error - previous_error) / delta_time;
+
+  if (integral > i_clamp) {         // stop the integral from getting out of control
+    integral = i_clamp;
+  }
+
+  if (error < 0.001) {              // reset integral if the error is enough
+    integral = 0;
+  }
+
+  return velocity = error * proportional_gain + integral * integral_gain + derivative * derivative_gain;
 }
 
-int Stepper::newFrequency(double velocity) {
+int Stepper::newFrequency(double position, double desired_position) {
+  int velocity; 
+
+// pidController(velocity);
+  velocity = pid_controller(desired_position, position);
 
   if(velocity > 0) {
     direction = HIGH;
@@ -77,14 +109,14 @@ int Stepper::newFrequency(double velocity) {
   else {
     direction = LOW;
   }
-// pidController(velocity);
-  velocity = abs(pidController(velocity));
 
-  if (velocity < 0.0001) {
-    motorFrequency = 10000;
+  if (abs(velocity) < 0.001) {
+    motorFrequency = 1000000;
+    digitalWrite(13, LOW);
   }
   else {
-    motorFrequency = (1000 / velocity); // this just needs to invert the velocity values
+    motorFrequency = (1000 / abs(velocity)); // this just needs to invert the velocity values
+    digitalWrite(13, HIGH);
   }
 
   if(motorFrequency <= 15){
@@ -98,7 +130,7 @@ int Stepper::newFrequency(double velocity) {
   return motorFrequency;
   
 }
-
+/*
 void Stepper::currentVelocity(int currentPosition){
   int counts_per_step = (encoder_resolution * 1.8)/ (360.0); // counts per step with a resolution of 
 
@@ -117,7 +149,7 @@ void Stepper::currentVelocity(int currentPosition){
   else {
     digitalWrite(13, LOW);
   }
-}
+}*/
 
 
 /*Encoder encoder(enc_pin_A, enc_pin_B)
