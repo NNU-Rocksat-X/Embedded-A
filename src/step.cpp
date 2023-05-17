@@ -73,17 +73,18 @@ double Stepper::pidController(double goal_position) {
 
 
 double Stepper::pid_controller(double desired_angle, double current_angle) {
-  double proportional_gain = 0.1;
-  double integral_gain = 0.001;
-  double derivative_gain = 0.1;
-  double max_integral = 0.1;
+  double proportional_gain = 0.5;
+  double integral_gain = 0.5;
+  double derivative_gain = 0.01;
+  double max_integral = 1;
+  //double setPoint = 200;
 
-  double now_time = millis();
+  double now_time = micros();
   double delta_time = now_time - previous_time;
   previous_time = now_time;
 
   error = desired_angle - current_angle;
-  integral += error;
+  integral += error; //* delta_time;
   derivative = (error - previous_error) / delta_time;
 
   if (integral > max_integral) {         // stop the integral from getting out of control
@@ -92,22 +93,20 @@ double Stepper::pid_controller(double desired_angle, double current_angle) {
   else if (integral < -max_integral) {
     integral = -max_integral;
   }
-
-  if (fabs(error) < 5) {              // reset integral if the error is enough
+/*
+  if (abs(error) < 5) {              // reset integral if the error is enough
     integral = 0;
-  }
+    //derivative = 0;
+    //error = 0;
+  }*/
 
-  if (error > -10 && error < 10) {
-    digitalWrite(13, HIGH);
-  }
-  else {
-    digitalWrite(13, LOW);
-  }
+  //if (error > set_point) {
+  //  velocity += 15;
+  //}
   
-
   previous_error = error;
 
-  return velocity = error * proportional_gain;// + integral * integral_gain + derivative * derivative_gain;
+  return velocity = error * proportional_gain + integral * integral_gain + derivative * derivative_gain;
 }
 
 int Stepper::newFrequency(double position, double desired_position) {
@@ -116,10 +115,10 @@ int Stepper::newFrequency(double position, double desired_position) {
   velocity = pid_controller(desired_position, position);
 
   if(velocity > 0) {
-    direction = HIGH;
+    direction = LOW;
   }
   else {
-    direction = LOW;
+    direction = HIGH;
   }
 
   if (fabs(velocity) < 0.001) {
@@ -131,8 +130,8 @@ int Stepper::newFrequency(double position, double desired_position) {
     //digitalWrite(13, HIGH);
   }
 
-  if(motorFrequency <= 15){
-    motorFrequency = 15;
+  if(motorFrequency <= 60){
+    motorFrequency = 60;
   }
   else{
   }

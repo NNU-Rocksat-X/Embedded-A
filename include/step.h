@@ -11,6 +11,7 @@ class Stepper{
     int readEncoders();
     void currentVelocity(int currentPosition);  // populates the current velocity values on all the instances of this class
     double current_velocity;
+    double velocity;
 
   private:
     int step_pin;
@@ -34,7 +35,7 @@ class Stepper{
     double derivative_gain;
     double previous_error;
     int previous_time;
-    double velocity;
+    //double velocity;
     
 };
 

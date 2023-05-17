@@ -66,7 +66,7 @@ const int m6_OnTime = 1;
 const int m1_period = 0;
 const int m2_period = 0;
 const int m3_period = 0;
-const int m4_period = 100000;
+const int m4_period = 0;
 const int m5_period = 0;
 const int m6_period = 0;
 const int m7_period = 0;
@@ -210,11 +210,13 @@ void loop(void)
   tasks[3].period = myStepper[3].newFrequency(myEncoder[3].read(), position_cmds[3]);
   tasks[4].period = myStepper[4].newFrequency(myEncoder[4].read(), position_cmds[4]);
   tasks[5].period = myStepper[5].newFrequency(myEncoder[5].read(), position_cmds[5]);
-  tasks[6].period = myStepper[6].newFrequency(myEncoder[6].read(), position_cmds[4]);
+  tasks[6].period = myStepper[6].newFrequency(myEncoder[6].read(), position_cmds[6]);
 
 	delay(5);
 	
   sendEncoderValues();
+
+  encoder_positions[0] = myStepper->velocity;
 	send_feedback(&encoder_positions[0]);
 
   //prevEncoderPos = encoder_positions[5];
