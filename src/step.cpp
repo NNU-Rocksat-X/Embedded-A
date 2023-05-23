@@ -73,7 +73,7 @@ double Stepper::pidController(double goal_position) {
 
 
 double Stepper::pid_controller(double desired_angle, double current_angle) {
-  double proportional_gain = 0.5;
+  double proportional_gain = 0.5; // was 0.5
   double integral_gain = 0.5;
   double derivative_gain = 0.01;
   double max_integral = 1;
