@@ -27,6 +27,9 @@ static void memcopy(void* dest, const void* src, int n)
 void setup_comm(void)
 {
     hw_serial.begin(BAUD_RATE);
+
+    hw_serial.clear();
+    hw_serial.flush();
 }
 
 uint8_t get_cmd(int32_t* cmd, bool* led_value)
@@ -50,7 +53,7 @@ uint8_t get_cmd(int32_t* cmd, bool* led_value)
                         {
                             // check crc
                             memcopy(&rx, &buffer[0], sizeof(CMDPacket));
-                            uint16_t crc = crc16((unsigned char*)&rx, (int)sizeof(CMDPacket) - 4); // // Subtract 2 so the crc is not calculated over the crc
+                            uint16_t crc = crc16((unsigned char*)&rx, (int)sizeof(CMDPacket) - 4); // trying 2 instead of 4 // Subtract 2 so the crc is not calculated over the crc
                             rcv_crc = bytes_recieved;
                             *led_value = (bool)rx.led;
 
@@ -87,6 +90,6 @@ void send_feedback(int32_t* enc_steps)
     RESPacket tx;
     tx.seq = sequence;
     memcopy(&tx.joint_step_position[0], enc_steps, sizeof(uint32_t) * NUM_JOINTS);
-    tx.crc = crc16((unsigned char*)&tx, sizeof(RESPacket) - 2);
-    hw_serial.write((char*)&tx, sizeof(RESPacket));
+    tx.crc = crc16((unsigned char*)&tx, sizeof(RESPacket) - 2); 
+    hw_serial.write((char*)&tx, sizeof(RESPacket)); // replacing hw_serial with serial
 }
