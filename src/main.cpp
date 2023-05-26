@@ -212,6 +212,25 @@ void loop(void)
 	
 	get_cmd(&position_cmds[0], &led_power);
 
+  tasks[0].period = myStepper[0].newFrequency(myEncoder[0].read(), position_cmds[0]);   // set the period of each motor based on the velocities recived from the jetson
+  tasks[1].period = myStepper[1].newFrequency(myEncoder[1].read(), position_cmds[1]);
+  tasks[2].period = myStepper[2].newFrequency(myEncoder[2].read(), position_cmds[2]);
+  tasks[3].period = myStepper[3].newFrequency(myEncoder[3].read(), position_cmds[3]);
+  tasks[4].period = myStepper[4].newFrequency(myEncoder[4].read(), position_cmds[4]);
+  tasks[5].period = myStepper[5].newFrequency(myEncoder[5].read(), position_cmds[5]);
+  tasks[6].period = myStepper[6].newFrequency(myEncoder[6].read(), position_cmds[6]);
+
+	delay(5);
+	
+  sendEncoderValues();
+
+  encoder_positions[0] = myStepper->velocity;
+	send_feedback(&encoder_positions[0]);
+
+  //prevEncoderPos = encoder_positions[5];
+/*
+  for (int jj = 0; jj < 7; ++jj) {
+    myStepper[jj].currentVelocity(encoder_positions[jj]);
   /*if (get_cmd(&position_cmds[0], &led_power) == 0) {
     digitalWrite(13, HIGH);
   }

@@ -5,11 +5,11 @@
 #include <apogee_robot_core/CommonComms.h>
 #include <assert.h>
 
-#define BAUD_RATE (9600) // 9600 before
+#define BAUD_RATE (9600)
 
 // hw_serial == Serial: Communicate over micro-usb
 // hw_serial == Serial1: Communicate over tx and rx pins
-#define hw_serial (Serial1)
+#define hw_serial (Serial)
 #define BUFFER_SIZE (50)
 
 /* @Brief - Performs required steps to setup the communication. Call during main setup
