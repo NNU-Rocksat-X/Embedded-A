@@ -90,6 +90,6 @@ void send_feedback(int32_t* enc_steps)
     RESPacket tx;
     tx.seq = sequence;
     memcopy(&tx.joint_step_position[0], enc_steps, sizeof(uint32_t) * NUM_JOINTS);
-    tx.crc = crc16((unsigned char*)&tx, sizeof(RESPacket) - 2); 
-    hw_serial.write((char*)&tx, sizeof(RESPacket)); // replacing hw_serial with serial
+    tx.crc = crc16((unsigned char*)&tx, sizeof(RESPacket) - 4); // trying 4 instead of 2
+    hw_serial.write((char*)&tx, sizeof(RESPacket)); 
 }

@@ -1,13 +1,14 @@
 #include "step.h"
 #include <Arduino.h>
 
-Stepper::Stepper(int _step_pin, int _dir_pin, int _enc_pin_A, int _enc_pin_B, int encoderResolution){
+Stepper::Stepper(int _step_pin, int _dir_pin, int _enc_pin_A, int _enc_pin_B, int encoderResolution, int _motor_id){
 
   step_pin = _step_pin;
   dir_pin = _dir_pin;
   enc_pin_A = _enc_pin_A;
   enc_pin_B = _enc_pin_B;
   encoder_resolution = encoderResolution;
+  motor_id = _motor_id;
 
   pinMode(step_pin, OUTPUT);
   pinMode(dir_pin, OUTPUT);
@@ -73,7 +74,7 @@ double Stepper::pidController(double goal_position) {
 
 
 double Stepper::pid_controller(double desired_angle, double current_angle) {
-  double proportional_gain = 0.5;
+  double proportional_gain = 0.3;
   double integral_gain = 0.5;
   double derivative_gain = 0.01;
   double max_integral = 1;
@@ -109,16 +110,44 @@ double Stepper::pid_controller(double desired_angle, double current_angle) {
   return velocity = error * proportional_gain + integral * integral_gain + derivative * derivative_gain;
 }
 
+int Stepper::deg_to_step(int deg) {
+  if (motor_id == 2 || motor_id == 4) {
+    int temp_val = ((encoder_resolution * 4.0 * 6.0 * 6.0) / 360.0);
+    return temp_val * deg;
+  }
+  else if (motor_id == 1) {
+    int temp_val = ((encoder_resolution * 4.0 * 3.0) / 360.0);
+    return temp_val * deg;
+  }
+  else {
+    int temp_val = ((encoder_resolution * 4.0 * 6.0) / 360.0);
+    return temp_val * deg;
+  }
+
+}
+
+
+
 int Stepper::newFrequency(double position, double desired_position) {
   int velocity; 
 
   velocity = pid_controller(desired_position, position);
 
-  if(velocity > 0) {
-    direction = LOW;
+  if (motor_id == 3 || motor_id == 6 || motor_id == 4 || motor_id == 2 || motor_id == 1 || motor_id == 5) {
+    if(velocity > 0) {  
+      direction = HIGH;
+    }
+    else {
+      direction = LOW;
+    }
   }
   else {
-    direction = HIGH;
+    if(velocity > 0) {  
+      direction = LOW;
+    }
+    else {
+      direction = HIGH;
+    }
   }
 
   if (fabs(velocity) < 0.001) {
@@ -130,10 +159,10 @@ int Stepper::newFrequency(double position, double desired_position) {
     //digitalWrite(13, HIGH);
   }
 
-  if(motorFrequency <= 60){
-    motorFrequency = 60;
+  if (motorFrequency <= 100) {
+    motorFrequency = 100;
   }
-  else{
+  else {
   }
 
   //take steps/s convert to s/step and convert to microseconds 
@@ -141,6 +170,7 @@ int Stepper::newFrequency(double position, double desired_position) {
   return motorFrequency;
   
 }
+
 /*
 void Stepper::currentVelocity(int currentPosition){
   int counts_per_step = (encoder_resolution * 1.8)/ (360.0); // counts per step with a resolution of 

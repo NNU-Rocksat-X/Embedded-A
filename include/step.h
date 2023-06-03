@@ -5,7 +5,7 @@
 
 class Stepper{
   public:
-    Stepper(int _step_pin, int _dir_pin, int _enc_pin_A, int enc_pin_B, int encoderResolution);
+    Stepper(int _step_pin, int _dir_pin, int _enc_pin_A, int enc_pin_B, int encoderResolution, int _motor_id);
     void step();
     int newFrequency(double position, double desired_position);
     int readEncoders();
@@ -22,7 +22,9 @@ class Stepper{
     int motorFrequency;
     bool highLow;
     int encoder_resolution;
+    int motor_id;
 
+    int deg_to_step(int deg);
     double pid_controller(double desired_angle, double current_angle);
 
     double zero_position;

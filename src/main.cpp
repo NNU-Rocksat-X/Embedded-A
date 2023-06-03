@@ -4,21 +4,23 @@
 #include "Encoder.h"
 #include <TimerOne.h>
 
-#define enc_pin_1A    0
-#define enc_pin_2A    0
+#define enc_pin_1A    2
+#define enc_pin_2A    6
 #define enc_pin_3A    17
 #define enc_pin_4A    4
 #define enc_pin_5A    15
 #define enc_pin_6A    40
 #define enc_pin_7A    38
+#define enc_pin_8A    10
 
-#define enc_pin_1B    0
-#define enc_pin_2B    0
+#define enc_pin_1B    3
+#define enc_pin_2B    7
 #define enc_pin_3B    18
 #define enc_pin_4B    5
 #define enc_pin_5B    16
 #define enc_pin_6B    41
 #define enc_pin_7B    39
+#define enc_pin_8B    11
 
 #define step_pin_1    24
 #define step_pin_2    28
@@ -27,6 +29,7 @@
 #define step_pin_5    36
 #define step_pin_6    30
 #define step_pin_7    26
+#define step_pin_8    8
 
 #define dir_pin_1     25
 #define dir_pin_2     29
@@ -35,6 +38,7 @@
 #define dir_pin_5     37
 #define dir_pin_6     31
 #define dir_pin_7     27
+#define dir_pin_8     9
 
 int32_t position_cmds[NUM_JOINTS];
 int32_t encoder_positions[NUM_JOINTS];
@@ -75,21 +79,23 @@ double velocities[NUM_JOINTS];
 
 uint32_t encoderValues[NUM_JOINTS];
 
-Stepper myStepper[] = { Stepper(step_pin_1, dir_pin_1, enc_pin_1A, enc_pin_1B, 1000),
-                        Stepper(step_pin_2, dir_pin_2, enc_pin_2A, enc_pin_2B, 1000), 
-                        Stepper(step_pin_3, dir_pin_3, enc_pin_3A, enc_pin_3B, 300),
-                        Stepper(step_pin_4, dir_pin_4, enc_pin_4A, enc_pin_4B, 300), 
-                        Stepper(step_pin_5, dir_pin_5, enc_pin_5A, enc_pin_5B, 300), 
-                        Stepper(step_pin_6, dir_pin_6, enc_pin_6A, enc_pin_6B, 300),
-                        Stepper(step_pin_7, dir_pin_7, enc_pin_7A, enc_pin_7B, 300)}; 
+Stepper myStepper[] = { Stepper(step_pin_1, dir_pin_1, enc_pin_1A, enc_pin_1B, 1000, 1),
+                        Stepper(step_pin_2, dir_pin_2, enc_pin_2A, enc_pin_2B, 1000, 2), 
+                        Stepper(step_pin_3, dir_pin_3, enc_pin_3A, enc_pin_3B, 300, 3),
+                        Stepper(step_pin_4, dir_pin_4, enc_pin_4A, enc_pin_4B, 300, 4), 
+                        Stepper(step_pin_5, dir_pin_5, enc_pin_5A, enc_pin_5B, 300, 5), 
+                        Stepper(step_pin_6, dir_pin_6, enc_pin_6A, enc_pin_6B, 300, 6),
+                        Stepper(step_pin_7, dir_pin_7, enc_pin_7A, enc_pin_7B, 1000, 7),
+                        Stepper(step_pin_8, dir_pin_8, enc_pin_8A, enc_pin_8B, 1000, 8)}; 
 
 Encoder myEncoder[] = { Encoder(enc_pin_1A, enc_pin_1B),
                         Encoder(enc_pin_2A, enc_pin_2B),
-                        Encoder(enc_pin_3A, enc_pin_4B),
+                        Encoder(enc_pin_3A, enc_pin_3B),
                         Encoder(enc_pin_4A, enc_pin_4B),
                         Encoder(enc_pin_5A, enc_pin_5B),
                         Encoder(enc_pin_6A, enc_pin_6B),
-                        Encoder(enc_pin_7A, enc_pin_7B)}; 
+                        Encoder(enc_pin_7A, enc_pin_7B),
+                        Encoder(enc_pin_8A, enc_pin_8B)}; 
 
 int velocity[6];
 
@@ -110,6 +116,11 @@ void initEncoders() {
   }
 }
 
+/******************************************deg to encoder steps*******************************************u*/
+int deg_to_steps(double deg) 
+{
+    return 20 * deg;
+}
 
 void setup(void)
 {
@@ -180,6 +191,15 @@ void setup(void)
   tasks[ii].period = m7_period;
   pinMode(enc_pin_7A, INPUT);
   pinMode(enc_pin_7B, INPUT);
+
+    ++ii;
+  
+  //init m7
+  tasks[ii].state = false;
+  tasks[ii].elapsedTime = 0;
+  tasks[ii].period = m7_period;
+  pinMode(enc_pin_8A, INPUT);
+  pinMode(enc_pin_8B, INPUT);
   
   pinMode(13, OUTPUT);                    // led pin to output
 
@@ -200,17 +220,15 @@ void loop(void)
 {
 	bool led_power;
 
-
   if (get_cmd(&position_cmds[0], &led_power) == 2) {
-    digitalWrite(13, HIGH);
-    //delay(1000);
+    //digitalWrite(13, HIGH);
   }
 
   else {
-    digitalWrite(13, LOW);
+    //digitalWrite(13, LOW);
   }
-	
-	get_cmd(&position_cmds[0], &led_power);
+
+  int temp_array[NUM_JOINTS];
 
   tasks[0].period = myStepper[0].newFrequency(myEncoder[0].read(), position_cmds[0]);   // set the period of each motor based on the velocities recived from the jetson
   tasks[1].period = myStepper[1].newFrequency(myEncoder[1].read(), position_cmds[1]);
@@ -219,42 +237,11 @@ void loop(void)
   tasks[4].period = myStepper[4].newFrequency(myEncoder[4].read(), position_cmds[4]);
   tasks[5].period = myStepper[5].newFrequency(myEncoder[5].read(), position_cmds[5]);
   tasks[6].period = myStepper[6].newFrequency(myEncoder[6].read(), position_cmds[6]);
+  tasks[7].period = myStepper[7].newFrequency(myEncoder[7].read(), position_cmds[7]);
 
 	delay(5);
 	
   sendEncoderValues();
-
-  encoder_positions[0] = myStepper->velocity;
-	send_feedback(&encoder_positions[0]);
-
-  //prevEncoderPos = encoder_positions[5];
-/*
-  for (int jj = 0; jj < 7; ++jj) {
-    myStepper[jj].currentVelocity(encoder_positions[jj]);
-  /*if (get_cmd(&position_cmds[0], &led_power) == 0) {
-    digitalWrite(13, HIGH);
-  }
-
-  else {
-    digitalWrite(13, LOW);
-  }*/
-
-
-
-  //delay (1000);
-
-  tasks[0].period = myStepper[0].newFrequency(myEncoder[0].read(), position_cmds[0]);   // set the period of each motor based on the velocities recived from the jetson
-  tasks[1].period = myStepper[1].newFrequency(myEncoder[1].read(), position_cmds[1]);
-  tasks[2].period = myStepper[2].newFrequency(myEncoder[2].read(), position_cmds[2]);
-  tasks[3].period = myStepper[3].newFrequency(myEncoder[3].read(), position_cmds[3]);
-  tasks[4].period = myStepper[4].newFrequency(myEncoder[4].read(), position_cmds[4]);
-  tasks[5].period = myStepper[5].newFrequency(myEncoder[5].read(), position_cmds[5]);
-  tasks[6].period = myStepper[6].newFrequency(myEncoder[6].read(), position_cmds[6]);
-
-	delay(5);
-	
-  sendEncoderValues();
-
 	send_feedback(&encoder_positions[0]);
 }
 
