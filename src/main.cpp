@@ -85,8 +85,8 @@ Stepper myStepper[] = { Stepper(step_pin_1, dir_pin_1, enc_pin_1A, enc_pin_1B, 1
                         Stepper(step_pin_4, dir_pin_4, enc_pin_4A, enc_pin_4B, 300, 4), 
                         Stepper(step_pin_5, dir_pin_5, enc_pin_5A, enc_pin_5B, 300, 5), 
                         Stepper(step_pin_6, dir_pin_6, enc_pin_6A, enc_pin_6B, 300, 6),
-                        Stepper(step_pin_7, dir_pin_7, enc_pin_7A, enc_pin_7B, 1000, 7),
-                        Stepper(step_pin_8, dir_pin_8, enc_pin_8A, enc_pin_8B, 1000, 8)}; 
+                        Stepper(step_pin_7, dir_pin_7, enc_pin_7A, enc_pin_7B, 1000, 7)};
+                        //Stepper(step_pin_8, dir_pin_8, enc_pin_8A, enc_pin_8B, 1000, 8)}; 
 
 Encoder myEncoder[] = { Encoder(enc_pin_1A, enc_pin_1B),
                         Encoder(enc_pin_2A, enc_pin_2B),
@@ -94,32 +94,29 @@ Encoder myEncoder[] = { Encoder(enc_pin_1A, enc_pin_1B),
                         Encoder(enc_pin_4A, enc_pin_4B),
                         Encoder(enc_pin_5A, enc_pin_5B),
                         Encoder(enc_pin_6A, enc_pin_6B),
-                        Encoder(enc_pin_7A, enc_pin_7B),
-                        Encoder(enc_pin_8A, enc_pin_8B)}; 
+                        Encoder(enc_pin_7A, enc_pin_7B)};
+                        //Encoder(enc_pin_8A, enc_pin_8B)}; 
 
 int velocity[6];
 
-/***************************************** -=+ Encoder Transmit Sequence +=- *****************************************/
+/*
+**************************************** -=+ Encoder Transmit Sequence +=- *****************************************/
+// - Populates Encoder values
+
 void sendEncoderValues() {
   
   for(int ii = 0; ii < NUM_JOINTS; ++ii) { 
     encoder_positions[ii] = myEncoder[ii].read();
   }
-
-  //send_feedback(&encoder_positions[0]);
  
 }
 
+
+/***************************************** -=+ Initialize Encoders +=- *****************************************/
 void initEncoders() {
   for (int kk = 0; kk < NUM_JOINTS; ++kk) {
     myEncoder[kk].write(0);
   }
-}
-
-/******************************************deg to encoder steps*******************************************u*/
-int deg_to_steps(double deg) 
-{
-    return 20 * deg;
 }
 
 void setup(void)
@@ -192,14 +189,14 @@ void setup(void)
   pinMode(enc_pin_7A, INPUT);
   pinMode(enc_pin_7B, INPUT);
 
-    ++ii;
+  /*  ++ii;
   
-  //init m7
+  //init m8
   tasks[ii].state = false;
   tasks[ii].elapsedTime = 0;
   tasks[ii].period = m7_period;
   pinMode(enc_pin_8A, INPUT);
-  pinMode(enc_pin_8B, INPUT);
+  pinMode(enc_pin_8B, INPUT);*/
   
   pinMode(13, OUTPUT);                    // led pin to output
 
@@ -228,7 +225,7 @@ void loop(void)
     //digitalWrite(13, LOW);
   }
 
-  int temp_array[NUM_JOINTS];
+  //int temp_array[NUM_JOINTS];
 
   tasks[0].period = myStepper[0].newFrequency(myEncoder[0].read(), position_cmds[0]);   // set the period of each motor based on the velocities recived from the jetson
   tasks[1].period = myStepper[1].newFrequency(myEncoder[1].read(), position_cmds[1]);
@@ -237,7 +234,7 @@ void loop(void)
   tasks[4].period = myStepper[4].newFrequency(myEncoder[4].read(), position_cmds[4]);
   tasks[5].period = myStepper[5].newFrequency(myEncoder[5].read(), position_cmds[5]);
   tasks[6].period = myStepper[6].newFrequency(myEncoder[6].read(), position_cmds[6]);
-  tasks[7].period = myStepper[7].newFrequency(myEncoder[7].read(), position_cmds[7]);
+  //tasks[7].period = myStepper[7].newFrequency(myEncoder[7].read(), position_cmds[7]);
 
 	delay(5);
 	
@@ -246,19 +243,15 @@ void loop(void)
 }
 
 void motorISR(void){
-  //digitalWrite(13, HIGH);
   for(int ii = 0; ii < NUM_JOINTS; ++ii) {
-    
-    if (tasks[ii].elapsedTime >= tasks[ii].period) { // Ready
-   
+
+    if (tasks[ii].elapsedTime >= tasks[ii].period) { 
       myStepper[ii].step();               //call the step function
       tasks[ii].elapsedTime = 0;          //reset the elapsed time
-    
     }
     tasks[ii].elapsedTime += 10;          //increase the elapsed time since the last time the function was called
   }
 
-  //digitalWrite(13, LOW);
 }
 
 int main(void)
@@ -269,53 +262,3 @@ int main(void)
 	}
 
 }
-
-
-
-/*
-double pid_controller(int joint_id, double position_cmd){
-  static double error_sum[15];
-  static std::vector<double> prev_error[15];
-  static std::vector<double> prev_time[15];
-  static int d_cnt = 0;
-
-  // proportional component
-  double error = position_cmd - pos[joint_id];
-  double v = error * gains[joint_id]["p"];
-
-  // integral component
-  error_sum[joint_id] += error * gains[joint_id]["i"];
-
-  // clegg integrator (but if close to zero set make it equal to 0)
-  if (error < 0.001 && error > -0.001) {
-    error_sum[joint_id] = 0;
-  }
-  if (error_sum[joint_id] > gains[joint_id]["i_clamp"]) {
-    error_sum[joint_id] = gains[joint_id]["i_clamp"]
-  }
-  else if (error_sum[joint_id] < -1 * gains[joint_id]["i_clamp"]) {
-    error_sum[joint_id] = -1 * gains[joint_id]["i_clamp"]
-  }
-
-  v += error_sum[joint_id];
-
-  // derivative component
-  double now = ; // we need to get the current time as ros sees it
-
-  double d = 0;
-  if (prev_error[joint_id].size() > 0) {
-    d = (error - prev_error[joint_id].back()) / (now - prev_time[joint_id].back());
-  }
-
-  prev_error[joint_id].push_back(error);
-  prev_time[joint_id].push_back(now);
-
-  if ( prev_error[joint_id].size() > 10) {
-    prev_error[joint_id].pop_back();
-    prev_time[joint_id].pop_back();
-  }
-
-  v += d * gains[joint_id]["d"];
-
-  return v;
-}*/
